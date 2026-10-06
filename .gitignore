@@ -1,0 +1,42 @@
+# Built artifacts and Gradle
+build/
+.gradle/
+.kotlin/
+
+# Local configuration file (sdk path, etc)
+local.properties
+/local.properties
+
+# Logs and local diagnostics
+*.log
+/logs.md
+
+# Local AI assistants and agent instructions
+AGENTS.md
+CLAUDE.md
+claude_instructions.md
+builderors.md
+.agents/
+.codex/
+.claude/
+.gemini/
+.cursor/
+.cursorrules
+.aider*
+.github/copilot-instructions.md
+
+# Android Studio local state
+.idea/
+*.iml
+
+# OS/System files
+.DS_Store
+
+# Android build outputs and signatures
+*.apk
+*.aab
+*.dm
+/app/release/
+*.jks
+*.keystore
+google-services.json
