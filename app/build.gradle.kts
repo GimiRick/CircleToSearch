@@ -44,6 +44,18 @@ android {
         }
     }
 
+    signingConfigs {
+        val ciKeystoreFile = System.getenv("KEYSTORE_FILE")
+        if (ciKeystoreFile != null) {
+            create("ciRelease") {
+                storeFile = file(ciKeystoreFile)
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -52,6 +64,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            val ciSigning = signingConfigs.findByName("ciRelease")
+            if (ciSigning != null) {
+                signingConfig = ciSigning
+            }
         }
         
         getByName("debug") {
