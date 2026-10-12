@@ -10,7 +10,7 @@ activityCompose = "1.12.0"
 cameraX = "1.6.2"
 
 composeBom = "2024.09.00"
-material3 = "1.4.0-alpha04"
+material3 = "1.5.0-beta01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
