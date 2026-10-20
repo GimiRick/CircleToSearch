@@ -1618,10 +1618,10 @@ class CircleToSearchAccessibilityService : AccessibilityService() {
         val isNight = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
         
         // Match exactly CopyTextOverlayManager's palette mapping
-        val toolbarBgColor = try { getColor(android.R.color.system_surface_container_light) } catch(e: Exception) { if (isNight) Color.parseColor("#FF1C1C1C") else Color.parseColor("#FFF3EDF7") }
-        val primaryColor = try { getColor(android.R.color.system_accent1_600) } catch(e: Exception) { if (isNight) Color.parseColor("#FFD0BCFF") else Color.parseColor("#FF6750A4") }
-        val contentColor = Color.WHITE
-        val borderColor = if (isNight) Color.parseColor("#33FFFFFF") else Color.parseColor("#22000000")
+        val toolbarBgColor = if (isNight) Color.parseColor("#2B2930") else Color.parseColor("#F3EDF7")
+        val primaryColor = if (isNight) Color.parseColor("#D0BCFF") else Color.parseColor("#6750A4")
+        val contentColor = if (isNight) Color.parseColor("#381E72") else Color.WHITE
+        val borderColor = if (isNight) Color.parseColor("#49454F") else Color.parseColor("#E6E0E9")
 
         val menuLayout = android.widget.LinearLayout(this).apply {
             orientation = android.widget.LinearLayout.HORIZONTAL

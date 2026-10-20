@@ -28,7 +28,7 @@ object OcrLanguageCatalog {
     val downloadablePacks: List<OcrLanguagePack> = listOf(
         OcrLanguagePack(
             id = "latin",
-            displayName = "Latin script",
+            displayName = "Latin script (English)",
             coverageDescription = "English, Spanish, French, German, Portuguese, Italian, Dutch, Polish, Turkish, Vietnamese, and more",
             isBundled = false,
             modelRepo = "PaddlePaddle/latin_PP-OCRv5_mobile_rec_onnx",
@@ -70,7 +70,7 @@ object OcrLanguageCatalog {
         ),
         OcrLanguagePack(
             id = "devanagari",
-            displayName = "Devanagari",
+            displayName = "Devanagari (Hindi)",
             coverageDescription = "Hindi, Marathi, Sanskrit, Nepali, and English",
             isBundled = false,
             modelRepo = "PaddlePaddle/devanagari_PP-OCRv5_mobile_rec_onnx",

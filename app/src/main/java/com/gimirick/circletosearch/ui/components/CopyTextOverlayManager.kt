@@ -10,6 +10,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.*
 import android.net.Uri
 import android.view.*
@@ -124,6 +125,7 @@ class CopyTextOverlayManager(
             if (remappedStart in allWords.indices && remappedEnd in allWords.indices) {
                 globalSelectionStart = remappedStart
                 globalSelectionEnd = remappedEnd
+                hasActiveTextSelection.value = true
             } else {
                 clearSelection()
             }
@@ -135,18 +137,20 @@ class CopyTextOverlayManager(
     }
     
     // Selection state
+    val hasActiveTextSelection = mutableStateOf(false)
     private var globalSelectionStart: Int = -1
     private var globalSelectionEnd: Int = -1
 
-    private fun hasActiveSelection(): Boolean =
+    fun hasActiveSelection(): Boolean =
         globalSelectionStart in allWords.indices &&
             globalSelectionEnd in allWords.indices
 
-    private fun clearSelection() {
+    fun clearSelection() {
         val hadSelectionState =
             globalSelectionStart != -1 || globalSelectionEnd != -1
         globalSelectionStart = -1
         globalSelectionEnd = -1
+        hasActiveTextSelection.value = false
         if (hadSelectionState) {
             dimView?.resetSelectionUi()
         }
@@ -257,15 +261,91 @@ class CopyTextOverlayManager(
         private val density = resources.displayMetrics.density
         private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop.toFloat()
 
+        private val isNight = (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+
+        // Material 3 theme palette matching CircleToSearchTheme (Purple/Lavender)
+        private val colorSurface = if (isNight) Color.parseColor("#2B2930") else Color.parseColor("#F3EDF7")
+        private val colorSurfaceBorder = if (isNight) Color.parseColor("#49454F") else Color.parseColor("#E6E0E9")
+        private val colorPrimary = if (isNight) Color.parseColor("#D0BCFF") else Color.parseColor("#6750A4")
+        private val colorOnPrimary = if (isNight) Color.parseColor("#381E72") else Color.WHITE
+        private val colorSecondaryContainer = if (isNight) Color.parseColor("#4A4458") else Color.parseColor("#E8DEF8")
+        private val colorOnSecondaryContainer = if (isNight) Color.parseColor("#E8DEF8") else Color.parseColor("#1D192B")
+        private val colorNeutralContainer = if (isNight) Color.parseColor("#36343B") else Color.parseColor("#E6E0E9")
+        private val colorOnNeutralContainer = if (isNight) Color.parseColor("#CAC4D0") else Color.parseColor("#49454F")
+        private val colorDragHandle = if (isNight) Color.parseColor("#80CAC4D0") else Color.parseColor("#8079747E")
+        private val colorSelectionHighlight = if (isNight) Color.parseColor("#4F378B") else Color.parseColor("#D0BCFF")
+        private val colorSelectionHandle = colorPrimary
+
         private val dimPaint = Paint().apply { color = Color.BLACK; alpha = 38; isAntiAlias = false }
-        private val selectedWordPaint = Paint().apply {
-            color = try { context.getColor(android.R.color.system_accent1_200) } catch(e: Exception) { Color.parseColor("#D0BCFF") }
-            alpha = 90
-            isAntiAlias = true
+        private val selectedWordPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorSelectionHighlight
+            alpha = if (isNight) 100 else 115
+            style = Paint.Style.FILL
         }
-        private val handlePaint = Paint().apply { color = Color.parseColor("#6750A4"); isAntiAlias = true }
-        private val toolbarBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#F3EDF7") }
-        private val toolbarActionPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.parseColor("#6750A4") }
+        private val handlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorSelectionHandle
+            style = Paint.Style.FILL
+        }
+        private val toolbarBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorSurface
+            style = Paint.Style.FILL
+        }
+        private val toolbarBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorSurfaceBorder
+            style = Paint.Style.STROKE
+            strokeWidth = 1f * density
+        }
+        private val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorSurface
+            setShadowLayer(
+                8f * density,
+                0f,
+                3f * density,
+                if (isNight) Color.argb(120, 0, 0, 0) else Color.argb(45, 0, 0, 0)
+            )
+        }
+        private val hPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorDragHandle
+            style = Paint.Style.FILL
+        }
+        private val btnPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.FILL
+        }
+
+        private val primaryBtnTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorOnPrimary
+            style = Paint.Style.FILL
+            textSize = 13f * density
+            typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+        private val secondaryBtnTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorOnSecondaryContainer
+            style = Paint.Style.FILL
+            textSize = 13f * density
+            typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+            textAlign = Paint.Align.CENTER
+        }
+        private val neutralBtnTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorOnNeutralContainer
+            style = Paint.Style.FILL
+            textSize = 13f * density
+            typeface = Typeface.create("sans-serif", Typeface.NORMAL)
+            textAlign = Paint.Align.CENTER
+        }
+
+        private fun getButtonColors(label: String): Pair<Int, Paint> {
+            return when (label) {
+                "Copy" -> Pair(colorPrimary, primaryBtnTextPaint)
+                "Cancel" -> Pair(colorNeutralContainer, neutralBtnTextPaint)
+                else -> Pair(colorSecondaryContainer, secondaryBtnTextPaint)
+            }
+        }
+
+        private fun getTextOffset(paint: Paint): Float {
+            val metrics = paint.fontMetrics
+            return ((metrics.descent - metrics.ascent) / 2f) - metrics.descent
+        }
 
         private var dragHandleType = 0
         private val toolbarButtons = listOf(
@@ -307,28 +387,11 @@ class CopyTextOverlayManager(
         private var currentScaleX = 0f
         private var currentScaleY = 0f
         
-        // Hoisted UI properties
-        private val dynamicSurface = try { context.getColor(android.R.color.system_surface_container_light) } catch(e: Exception) { Color.parseColor("#F3EDF7") }
-        private val dynamicPrimary = try { context.getColor(android.R.color.system_accent1_600) } catch(e: Exception) { Color.parseColor("#6750A4") }
-        private val shadowPaint = Paint(toolbarBgPaint).apply { setShadowLayer(12f * density, 0f, 4f * density, Color.BLACK and 0x2F000000) }
-        private val hPaint = Paint(toolbarActionPaint).apply { color = Color.LTGRAY; style = Paint.Style.FILL }
-        private val btnPaint = Paint(handlePaint).apply { color = dynamicPrimary }
-        private val btnTextPaint = Paint(toolbarActionPaint).apply {
-            color = Color.WHITE
-            style = Paint.Style.FILL
-            textSize = 30f
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            textAlign = Paint.Align.CENTER
-        }
-        private val toolbarButtonPadding = 16f * density
+        private val toolbarButtonPadding = 14f * density
         private val toolbarButtonHeight = 36f * density
         private val toolbarButtonSpacing = 6f * density
-        private val toolbarMargin = 10f * density
-        private val toolbarDragHandleWidth = 24f * density
-        private val buttonTextOffset = Paint.FontMetrics().let { metrics ->
-            btnTextPaint.getFontMetrics(metrics)
-            ((metrics.descent - metrics.ascent) / 2f) - metrics.descent
-        }
+        private val toolbarMargin = 8f * density
+        private val toolbarDragHandleWidth = 16f * density
 
         private fun updateSelection(start: Int, end: Int) {
             if (start !in allWords.indices || end !in allWords.indices) {
@@ -337,6 +400,7 @@ class CopyTextOverlayManager(
             }
             globalSelectionStart = start
             globalSelectionEnd = end
+            hasActiveTextSelection.value = true
             recalculateHighlightPath()
             invalidate()
         }
@@ -485,9 +549,31 @@ class CopyTextOverlayManager(
         }
 
         private fun drawHandle(canvas: Canvas, x: Float, y: Float, isStart: Boolean) {
-            canvas.drawCircle(x, y, 18f, handlePaint)
-            if (isStart) canvas.drawRect(x - 2f, y, x + 2f, y + 40f, handlePaint)
-            else canvas.drawRect(x - 2f, y - 40f, x + 2f, y, handlePaint)
+            val radius = 8f * density
+            val stemWidth = 2f * density
+            val stemHeight = 20f * density
+            canvas.drawCircle(x, y, radius, handlePaint)
+            if (isStart) {
+                canvas.drawRoundRect(
+                    x - stemWidth / 2f,
+                    y,
+                    x + stemWidth / 2f,
+                    y + stemHeight,
+                    stemWidth / 2f,
+                    stemWidth / 2f,
+                    handlePaint
+                )
+            } else {
+                canvas.drawRoundRect(
+                    x - stemWidth / 2f,
+                    y - stemHeight,
+                    x + stemWidth / 2f,
+                    y,
+                    stemWidth / 2f,
+                    stemWidth / 2f,
+                    handlePaint
+                )
+            }
         }
 
         private fun drawFloatingToolbar(canvas: Canvas, anchor: RectF) {
@@ -497,7 +583,8 @@ class CopyTextOverlayManager(
                         toolbarDragHandleWidth +
                         toolbarButtonSpacing * toolbarButtons.size
                 toolbarButtons.forEachIndexed { index, button ->
-                    val buttonWidth = btnTextPaint.measureText(button.label) + toolbarButtonPadding * 2f
+                    val (_, textPaint) = getButtonColors(button.label)
+                    val buttonWidth = textPaint.measureText(button.label) + toolbarButtonPadding * 2f
                     toolbarButtonWidths[index] = buttonWidth
                     totalWidth += buttonWidth
                 }
@@ -524,10 +611,14 @@ class CopyTextOverlayManager(
             
             toolbarRect.set(tx, ty, tx + totalWidth, ty + toolbarButtonHeight + toolbarMargin * 2f)
             
+            // Elevation shadow
             canvas.drawRoundRect(toolbarRect, 22f * density, 22f * density, shadowPaint)
-            toolbarBgPaint.color = dynamicSurface
+            // Background surface
             canvas.drawRoundRect(toolbarRect, 22f * density, 22f * density, toolbarBgPaint)
+            // Outline border
+            canvas.drawRoundRect(toolbarRect, 22f * density, 22f * density, toolbarBorderPaint)
 
+            // Drag handle indicator
             val dx = tx + toolbarMargin
             dragHandleRect.set(
                 dx,
@@ -535,16 +626,21 @@ class CopyTextOverlayManager(
                 dx + toolbarDragHandleWidth,
                 ty + toolbarMargin + toolbarButtonHeight,
             )
+            val handleWidth = 3.5f * density
+            val handleHeight = 16f * density
+            val hx = dragHandleRect.centerX() - handleWidth / 2f
+            val hy = dragHandleRect.centerY() - handleHeight / 2f
             canvas.drawRoundRect(
-                dx + 8f * density,
-                ty + toolbarMargin + 8f * density,
-                dx + 16f * density,
-                ty + toolbarMargin + toolbarButtonHeight - 8f * density,
-                4f * density,
-                4f * density,
+                hx,
+                hy,
+                hx + handleWidth,
+                hy + handleHeight,
+                handleWidth / 2f,
+                handleWidth / 2f,
                 hPaint,
             )
 
+            // Buttons
             toolbarButtons.forEach { btn ->
                 val btnW = btn.baseRect.width().toFloat()
                 val startX = btn.baseRect.left.toFloat() + toolbarOffsetX
@@ -555,6 +651,8 @@ class CopyTextOverlayManager(
                     ty + toolbarMargin + toolbarButtonHeight,
                 )
                 
+                val (bgColor, textPaint) = getButtonColors(btn.label)
+                btnPaint.color = bgColor
                 canvas.drawRoundRect(
                     tempBtnRect,
                     toolbarButtonHeight / 2f,
@@ -564,12 +662,17 @@ class CopyTextOverlayManager(
                 canvas.drawText(
                     btn.label,
                     tempBtnRect.centerX(),
-                    tempBtnRect.centerY() + buttonTextOffset,
-                    btnTextPaint,
+                    tempBtnRect.centerY() + getTextOffset(textPaint),
+                    textPaint,
                 )
                 
                 // Update rect for touch events
-                btn.hitRect.set(tempBtnRect.left.toInt(), tempBtnRect.top.toInt(), tempBtnRect.right.toInt(), tempBtnRect.bottom.toInt())
+                btn.hitRect.set(
+                    tempBtnRect.left.toInt(),
+                    tempBtnRect.top.toInt(),
+                    tempBtnRect.right.toInt(),
+                    tempBtnRect.bottom.toInt()
+                )
             }
         }
 

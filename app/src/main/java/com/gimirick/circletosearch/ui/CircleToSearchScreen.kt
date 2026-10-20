@@ -2340,7 +2340,9 @@ fun CircleToSearchScreen(
             }
 
             // 4. Selection actions — positioned last so they render above the crop overlay.
-            if (selectionRect != null && isSelectionReady && !isSearching) {
+            // Suppress the image crop action bar while text is actively selected, avoiding duplicate toolbars.
+            val hasTextSelection = copyTextManager?.hasActiveTextSelection?.value == true
+            if (selectionRect != null && isSelectionReady && !isSearching && !hasTextSelection) {
                 val rect = selectionRect!!
                 val density = androidx.compose.ui.platform.LocalDensity.current
                 val leftPx = rect.left.toFloat()
