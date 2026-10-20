@@ -9,7 +9,7 @@ lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.12.0"
 cameraX = "1.6.2"
 
-composeBom = "2024.09.00"
+composeBom = "2026.09.00"
 material3 = "1.4.0-alpha04"
 
 [libraries]
