@@ -24,14 +24,14 @@ plugins {
 }
 
 android {
-    namespace = "com.akslabs.circletosearch"
+    namespace = "com.gimirick.circletosearch"
     compileSdk {
         version = release(36)
     }
 
 
     defaultConfig {
-        applicationId = "com.akslabs.circletosearch"
+        applicationId = "com.gimirick.circletosearch"
         minSdk = 29
         targetSdk = 36
         versionCode = 8
@@ -157,6 +157,7 @@ dependencies {
     implementation("com.google.zxing:core:3.5.4")
     implementation("com.google.mlkit:language-id:17.0.6")
     implementation("com.google.mlkit:translate:17.0.3")
+    implementation("com.google.mlkit:text-recognition-devanagari:16.0.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.11.0")
 
 

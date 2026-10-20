@@ -1,6 +1,6 @@
 # Корпус OCR v1
 
-Корпус находится в `app/src/androidTest/java/com/akslabs/circletosearch/ocr/`:
+Корпус находится в `app/src/androidTest/java/com/gimirick/circletosearch/ocr/`:
 `OcrCorpus.kt` содержит эталоны и рендеринг, `OcrCorpusInstrumentedTest.kt`
 запускает настоящий `PaddleOcrEngine` с моделями из APK.
 
@@ -15,7 +15,7 @@
 
 ```sh
 ./gradlew connectedDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=com.akslabs.circletosearch.ocr.OcrCorpusInstrumentedTest
+  -Pandroid.testInstrumentationRunnerArguments.class=com.gimirick.circletosearch.ocr.OcrCorpusInstrumentedTest
 ```
 
 Команда устанавливает и запускает тесты: использовать только при явно
