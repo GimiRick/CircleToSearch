@@ -140,6 +140,50 @@ Android kills background tasks aggressively and restricts Binder transactions to
 
 ---
 
+## How to Trigger Circle to Search
+
+CircleToSearch offers multiple flexible ways to trigger screen search across different device configurations, Android navigation modes, and PC emulators:
+
+### 1. 3-Button Navigation
+For devices using classic three-button navigation (Back, Home, Recents):
+- **Long-Press Home Button (⭕)**: Set CircleToSearch as your default **Digital assistant app** in Android Settings (`Settings` $\rightarrow$ `Apps` $\rightarrow$ `Default apps` $\rightarrow$ `Digital assistant app`). Holding the center Home button on any screen summons CircleToSearch instantly.
+- **Accessibility Button (🧍)**: If enabled in Android Accessibility settings (`Settings` $\rightarrow$ `Accessibility` $\rightarrow$ `CircleToSearch`), tap the accessibility person icon located in the bottom navigation bar.
+
+### 2. Gesture Navigation (Full Screen Gestures)
+For devices using modern edge-to-edge gesture navigation:
+- **Swipe from Bottom Corner**: Swipe diagonally inward from the bottom-left or bottom-right corner of the screen (the universal Android Assistant invocation gesture).
+- **Hold Navigation Bar / Handle**: Long-press the gesture bar / pill at the bottom center of the display (when configured as default assistant).
+- **Accessibility Shortcut**: On Android 12+, a two-finger swipe up from the bottom edge or accessibility button trigger can be bound to CircleToSearch.
+
+### 3. Floating Bubble (Recommended for Emulators & Tablets)
+- Open **CircleToSearch** and toggle **Floating Bubble** under **CUSTOMIZATION**.
+- A small, draggable floating icon appears on-screen over all applications and games. Tap it anytime to trigger search with one click.
+- Ideal for PC Android emulators (MSI App Player, BlueStacks, LDPlayer) where navigation bars or accessibility buttons are absent.
+
+### 4. Status Bar & Screen Edge Overlays
+- **Double-Tap Status Bar (Default)**: Double-tap anywhere along the top status bar to immediately freeze and search the screen.
+- **Custom Touch Zones**: Tap the **Settings (⚙️)** icon in the top-right corner of the app to customize trigger zones along the top, bottom, left, or right edges with configurable gestures (Single Tap, Double Tap, Triple Tap, Long Press, or Swipe Up/Down/Left/Right).
+
+### 5. Quick Settings Tile
+- Pull down the Android notification shade twice and tap the pencil icon (✏️) to edit tiles.
+- Drag the **CTS** tile into your active Quick Settings.
+- Tapping **CTS** automatically collapses the notification shade and captures the screen.
+
+### 6. Search with Camera
+- Tap the **Search with Camera** card directly on the home screen to capture and search physical objects, documents, and real-world scenes via the full-screen camera viewfinder.
+
+### 7. Developer & Emulator Hotkey (ADB)
+Trigger search programmatically or via PC keyboard hotkeys mapped to ADB commands:
+```bash
+# Trigger via transparent shortcut activity
+adb shell am start -n com.gimirick.circletosearch/.TileTriggerActivity
+
+# Or trigger standard assistant intent
+adb shell am start -a android.intent.action.ASSIST
+```
+
+---
+
 ## Privacy & Security Blueprint
 
 - **Zero Telemetry**: `ORT_DISABLE_TELEMETRY=1` is explicitly set during application initialization. No analytics or tracking SDKs are bundled.
@@ -169,10 +213,11 @@ cd CircleToSearch
 ./gradlew assembleDebug
 ```
 
-The build generates optimized per-architecture binaries:
+The build generates optimized binaries:
 
 - `app/build/outputs/apk/debug/app-arm64-v8a-debug.apk` (Recommended for modern 64-bit devices)
 - `app/build/outputs/apk/debug/app-armeabi-v7a-debug.apk` (For legacy 32-bit devices)
+- `app/build/outputs/apk/debug/app-universal-debug.apk` (Universal binary containing all architectures, ideal for x86_64 emulators)
 
 ### 2. Install on Device
 
