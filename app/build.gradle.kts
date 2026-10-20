@@ -85,7 +85,7 @@ android {
             isEnable = true
             reset()
             include("arm64-v8a", "armeabi-v7a")
-            isUniversalApk = false
+            isUniversalApk = true
         }
     }
 
@@ -121,9 +121,12 @@ androidComponents {
             val abi = output.filters.find { 
                 it.filterType == com.android.build.api.variant.FilterConfiguration.FilterType.ABI 
             }?.identifier
+            val baseCode = android.defaultConfig.versionCode ?: 0
             if (abi != null) {
-                val baseCode = android.defaultConfig.versionCode ?: 0
                 output.versionCode.set(baseCode * 10 + (abiCodes[abi] ?: 0))
+            } else {
+                // Universal APK gets base * 10 so specific ABI splits take precedence on compatible hardware
+                output.versionCode.set(baseCode * 10)
             }
         }
     }
