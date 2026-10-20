@@ -253,6 +253,8 @@ class OcrLanguageStorageTest {
     fun cleanStaleStagingDirsExplicitFailureHonestHandling() {
         val staleDir = File(storage.stagingRootDir, "locked_stale").apply { mkdirs() }
         val lockedFile = File(staleDir, "locked.bin").apply { writeText("cannot delete") }
+        val raf = java.io.RandomAccessFile(lockedFile, "rw")
+        val lock = raf.channel.lock()
         staleDir.setWritable(false, false)
         try {
             storage.cleanStaleStagingDirs()
@@ -260,6 +262,8 @@ class OcrLanguageStorageTest {
         } catch (e: IOException) {
             assertTrue(e.message!!.contains("Failed to delete stale staging"))
         } finally {
+            lock.release()
+            raf.close()
             staleDir.setWritable(true, false)
         }
     }

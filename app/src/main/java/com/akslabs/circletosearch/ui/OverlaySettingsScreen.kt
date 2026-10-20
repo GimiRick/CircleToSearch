@@ -57,7 +57,7 @@ fun OverlaySettingsScreen(
                 title = { Text("Overlay Settings", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -261,7 +261,7 @@ fun SegmentEditorItem(
 
                 
                 Spacer(modifier = Modifier.height(16.dp))
-                Divider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha=0.1f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha=0.1f))
                 Spacer(modifier = Modifier.height(12.dp))
                 
                 // Gestures
@@ -506,7 +506,7 @@ fun getActionIcon(action: ActionType): ImageVector = when (action) {
     ActionType.SCREENSHOT -> Icons.Default.Screenshot
     ActionType.FLASHLIGHT -> Icons.Default.FlashlightOn
     ActionType.HOME -> Icons.Default.Home
-    ActionType.BACK -> Icons.Default.ArrowBack
+    ActionType.BACK -> Icons.AutoMirrored.Filled.ArrowBack
     ActionType.RECENTS -> Icons.Default.History
     ActionType.LOCK_SCREEN -> Icons.Default.Lock
     ActionType.OPEN_NOTIFICATIONS -> Icons.Default.Notifications
@@ -633,7 +633,7 @@ fun AppPickerDialog(onDismiss: () -> Unit, onAppSelected: (String) -> Unit) {
                                     Text(app.packageName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
-                            Divider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha=0.5f))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha=0.5f))
                         }
                     }
                 }

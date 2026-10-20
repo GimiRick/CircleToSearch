@@ -72,8 +72,11 @@ private data class LanguageOption(
  * Sorted alphabetically by display name.
  */
 private val SUPPORTED_LANGUAGES = listOf(
+    LanguageOption("Auto (System Default)", "", "Default"),
     LanguageOption("Afrikaans", "af", "Afrikaans"),
+    LanguageOption("Albanian", "sq", "Shqip"),
     LanguageOption("Arabic", "ar", "العربية"),
+    LanguageOption("Belarusian", "be", "Беларуская"),
     LanguageOption("Bengali", "bn", "বাংলা"),
     LanguageOption("Bulgarian", "bg", "Български"),
     LanguageOption("Catalan", "ca", "Català"),
@@ -84,13 +87,17 @@ private val SUPPORTED_LANGUAGES = listOf(
     LanguageOption("Danish", "da", "Dansk"),
     LanguageOption("Dutch", "nl", "Nederlands"),
     LanguageOption("English", "en", "English"),
+    LanguageOption("Esperanto", "eo", "Esperanto"),
     LanguageOption("Estonian", "et", "Eesti"),
-    LanguageOption("Filipino", "fil", "Filipino"),
+    LanguageOption("Filipino", "tl", "Filipino"),
     LanguageOption("Finnish", "fi", "Suomi"),
     LanguageOption("French", "fr", "Français"),
+    LanguageOption("Galician", "gl", "Galego"),
+    LanguageOption("Georgian", "ka", "ქართული"),
     LanguageOption("German", "de", "Deutsch"),
     LanguageOption("Greek", "el", "Ελληνικά"),
     LanguageOption("Gujarati", "gu", "ગુજરાતી"),
+    LanguageOption("Haitian Creole", "ht", "Kreyòl ayisyen"),
     LanguageOption("Hebrew", "he", "עברית"),
     LanguageOption("Hindi", "hi", "हिन्दी"),
     LanguageOption("Hungarian", "hu", "Magyar"),
@@ -103,17 +110,16 @@ private val SUPPORTED_LANGUAGES = listOf(
     LanguageOption("Korean", "ko", "한국어"),
     LanguageOption("Latvian", "lv", "Latviešu"),
     LanguageOption("Lithuanian", "lt", "Lietuvių"),
+    LanguageOption("Macedonian", "mk", "Македонски"),
     LanguageOption("Malay", "ms", "Bahasa Melayu"),
-    LanguageOption("Malayalam", "ml", "മലയാളം"),
+    LanguageOption("Maltese", "mt", "Malti"),
     LanguageOption("Marathi", "mr", "मराठी"),
     LanguageOption("Norwegian", "nb", "Norsk"),
     LanguageOption("Persian", "fa", "فارسی"),
     LanguageOption("Polish", "pl", "Polski"),
     LanguageOption("Portuguese", "pt", "Português"),
-    LanguageOption("Punjabi", "pa", "ਪੰਜਾਬੀ"),
     LanguageOption("Romanian", "ro", "Română"),
     LanguageOption("Russian", "ru", "Русский"),
-    LanguageOption("Serbian", "sr", "Српски"),
     LanguageOption("Slovak", "sk", "Slovenčina"),
     LanguageOption("Slovenian", "sl", "Slovenščina"),
     LanguageOption("Spanish", "es", "Español"),
@@ -125,7 +131,8 @@ private val SUPPORTED_LANGUAGES = listOf(
     LanguageOption("Turkish", "tr", "Türkçe"),
     LanguageOption("Ukrainian", "uk", "Українська"),
     LanguageOption("Urdu", "ur", "اردو"),
-    LanguageOption("Vietnamese", "vi", "Tiếng Việt")
+    LanguageOption("Vietnamese", "vi", "Tiếng Việt"),
+    LanguageOption("Welsh", "cy", "Cymraeg")
 ).sortedBy { it.displayName }
 
 /**
@@ -139,7 +146,7 @@ fun TranslationLanguageDialog(
     onDismiss: () -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
-    var selectedCode by remember { mutableStateOf(currentLanguageCode ?: "en") }
+    var selectedCode by remember { mutableStateOf(currentLanguageCode ?: "") }
 
     val filteredLanguages = remember(searchQuery) {
         if (searchQuery.isBlank()) {
@@ -218,7 +225,7 @@ fun TranslationLanguageDialog(
                 onClick = { onLanguageSelected(selectedCode) },
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Translate")
+                Text("Apply")
             }
         },
         dismissButton = {

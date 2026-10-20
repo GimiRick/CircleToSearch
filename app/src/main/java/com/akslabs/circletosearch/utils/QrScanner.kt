@@ -293,7 +293,7 @@ object QrScanner {
         BarcodeFormat.UPC_E -> "UPC-E"
         BarcodeFormat.UPC_EAN_EXTENSION -> "UPC/EAN extension"
         null -> "Code"
-        else -> format.name.replace('_', ' ')
+
     }
 
     private fun parseWifi(text: String): QrResult {

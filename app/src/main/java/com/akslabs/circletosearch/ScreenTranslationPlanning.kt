@@ -67,7 +67,8 @@ internal fun normalizeTranslationLanguageTag(languageTag: String?): String? {
         ?.substringBefore('-')
         ?.substringBefore('_')
         .orEmpty()
-    return normalized.takeIf { it.isNotEmpty() && it != "und" }
+    val mapped = if (normalized == "fil") "tl" else normalized
+    return mapped.takeIf { it.isNotEmpty() && it != "und" }
 }
 
 private fun AggregateLanguage?.reliableLanguageTag(): String? {

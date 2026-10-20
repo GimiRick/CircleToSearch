@@ -179,6 +179,7 @@ import com.akslabs.circletosearch.data.SearchEngine
 import com.akslabs.circletosearch.ui.components.searchWithGoogleLens
 import com.akslabs.circletosearch.ui.components.mergeTextNodes
 import com.akslabs.circletosearch.ui.components.mergeRegionTextNodes
+import com.akslabs.circletosearch.ui.components.TranslationLanguageDialog
 import com.akslabs.circletosearch.ui.theme.OverlayGradientColors
 import com.akslabs.circletosearch.utils.ImageSearchUploader
 import com.akslabs.circletosearch.utils.ImageUtils
@@ -1610,9 +1611,8 @@ fun CircleToSearchScreen(
                                     SearchEngine.Bing -> ImageSearchUploader.getBingUrl(imageUrl)
                                     SearchEngine.Yandex -> ImageSearchUploader.getYandexUrl(imageUrl)
                                     SearchEngine.TinEye -> ImageSearchUploader.getTinEyeUrl(imageUrl)
-                                    else -> null
                                 }
-                                if (url != null) preloadedUrls[engine] = url
+                                preloadedUrls[engine] = url
                             }
                         }
 
@@ -3013,53 +3013,13 @@ fun CircleToSearchScreen(
         }
 
         if (showTranslationLangDialog) {
-            val languages = listOf(
-                null to "Auto (System Default)",
-                "ar" to "Arabic",
-                "zh" to "Chinese",
-                "nl" to "Dutch",
-                "en" to "English",
-                "fr" to "French",
-                "de" to "German",
-                "hi" to "Hindi",
-                "it" to "Italian",
-                "ja" to "Japanese",
-                "ko" to "Korean",
-                "pl" to "Polish",
-                "pt" to "Portuguese",
-                "ru" to "Russian",
-                "es" to "Spanish",
-                "tr" to "Turkish",
-                "uk" to "Ukrainian"
-            )
-            androidx.compose.material3.AlertDialog(
-                onDismissRequest = { showTranslationLangDialog = false },
-                title = { Text("Translate to...") },
-                text = {
-                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                        val currentSelection = uiPreferences.getTargetTranslateLang()
-                        languages.forEach { (code, name) ->
-                            val isSelected = currentSelection == code
-                            Text(
-                                text = name,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        uiPreferences.setTargetTranslateLang(code)
-                                        showTranslationLangDialog = false
-                                    }
-                                    .padding(vertical = 12.dp, horizontal = 16.dp),
-                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                            )
-                        }
-                    }
+            TranslationLanguageDialog(
+                currentLanguageCode = uiPreferences.getTargetTranslateLang(),
+                onLanguageSelected = { code ->
+                    uiPreferences.setTargetTranslateLang(code.ifBlank { null })
+                    showTranslationLangDialog = false
                 },
-                confirmButton = {
-                    androidx.compose.material3.TextButton(onClick = { showTranslationLangDialog = false }) {
-                        Text("Close")
-                    }
-                }
+                onDismiss = { showTranslationLangDialog = false }
             )
         }
     }

@@ -279,8 +279,10 @@ class ScreenTranslator(context: Context) : Closeable {
     ): TranslationBlocksResult {
         currentCoroutineContext().ensureActive()
 
-        val requestedTarget = targetLangCode ?: Locale.getDefault().language
-        val targetLanguage = TranslateLanguage.fromLanguageTag(requestedTarget)
+        val requestedTarget = normalizeTranslationLanguageTag(targetLangCode)
+            ?: normalizeTranslationLanguageTag(Locale.getDefault().toLanguageTag())
+            ?: normalizeTranslationLanguageTag(Locale.getDefault().language)
+        val targetLanguage = requestedTarget?.let(TranslateLanguage::fromLanguageTag)
             ?: TranslateLanguage.ENGLISH
         val aggregateLanguage = identifyAggregateLanguage(blocks)
         val identification = identifyBlockLanguages(blocks)

@@ -102,6 +102,7 @@ class OverlayConfigurationManager(context: Context) {
         private const val KEY_CONFIG = "overlay_config"
     }
 
+    @Suppress("SENSELESS_COMPARISON")
     fun getConfig(): OverlayConfig {
         val json = prefs.getString(KEY_CONFIG, null)
         if (json != null) {
