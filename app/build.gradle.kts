@@ -155,7 +155,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("androidx.compose.material:material-icons-core")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")
-    implementation("androidx.webkit:webkit:1.9.0")
+    implementation("androidx.webkit:webkit:1.18.0")
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.google.zxing:core:3.5.4")
     implementation("com.google.mlkit:language-id:17.0.6")
